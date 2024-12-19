@@ -30,7 +30,15 @@ class Bird(pygame.sprite.Sprite):
         self.image=self.images[self.index]
         self.rect=self.image.get_rect()
         self.rect.center=[x,y]
+        self.velocity=0
+
     def update(self):
+        self.velocity+=0.5
+        if self.velocity>8:
+            self.velocity=8
+        if self.rect.bottom < ground_y:
+            self.rect.y+=int(self.velocity)
+
         self.counter+=1
         cooldown=5
         if self.counter > cooldown:
