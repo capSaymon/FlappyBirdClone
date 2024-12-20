@@ -1,5 +1,5 @@
 import pygame
-import random
+import random # FOR PIPE RANDOM Y COORD POSITION MECHANISM
 pygame.init()
 
 # PARAMS
@@ -12,7 +12,7 @@ ground_scroll   = 0
 scroll_speed    = 4
 pipe_gap        = 150                       # px
 pipe_frequency  = 1500                      # ms
-last_pipe       = pygame.time.get_ticks() - pipe_frequency
+last_pipe       = pygame.time.get_ticks() - pipe_frequency # CREATE THE PIPE IMMEDIATELY AFTER STARTING THE GAME
 
 flying          = False
 game_over       = False
@@ -73,7 +73,7 @@ class Pipe(pygame.sprite.Sprite):
         self.image = pygame.image.load( "assets/pipe.png" )
         self.rect = self.image.get_rect()
 
-        # Position:     1 = top | -1 = bottom
+        # IF POSITION VAR == 1 THEN IT'S THE TOP PIPE, ELSE IT'S THE BOTTOM ONE
         if position == 1:
             self.image = pygame.transform.flip( self.image, False, True )
             self.rect.bottomleft    = [x, y - int(pipe_gap / 2) ]
@@ -81,8 +81,10 @@ class Pipe(pygame.sprite.Sprite):
         if position == -1:
             self.rect.topleft       = [x, y + int(pipe_gap / 2) ]
 
+    # UPDATE THE PIPE X COORD LOCATION
     def update(self):
         self.rect.x -= scroll_speed
+        # MEMORY OVERFLOW FIX - KILL THE PIPE IF IT REACHES END OF THE SCREEN
         if self.rect.right < 0:
             self.kill()
 
@@ -101,31 +103,40 @@ while run:
     screen.blit(background, (0, 0))
     screen.blit(ground, (ground_scroll, ground_y))
 
-    # GROUPS UPDATE
     bird_group.draw(screen)
     bird_group.update()
-    pipe_group.draw(screen)
-    pipe_group.update()
 
-    if flappy.rect.bottom > ground_y:
+    # DRAW THE PIPE ON THE SCREEN
+    pipe_group.draw(screen)
+
+    # LOOK FOR COLLISION BETWEEN THE BIRD AND THE PIPE, BUT DON'T DELETE THE GROUPS
+    if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+        game_over = True
+
+    if flappy.rect.bottom >= ground_y:
         game_over = True
         flying = False
 
-    # CHECK IF THE GAME IS RUNNING
+    # CHECK IF THE GAME IS RUNNING AND THE BIRD IS FLYING
     if game_over == False and flying == True:
 
         # GENERATE NEW PIPES
         time_now = pygame.time.get_ticks()
         if time_now - last_pipe > pipe_frequency:
-            last_pipe   = time_now
+
             pipe_height = random.randint(-100 , 100)
             btm_pipe    = Pipe(width, int(height / 2) + pipe_height, -1)
             top_pipe    = Pipe(width, int(height / 2) + pipe_height, 1)
             pipe_group.add(btm_pipe)
             pipe_group.add(top_pipe)
+            last_pipe = time_now
 
         ground_scroll -= scroll_speed
-        if abs(ground_scroll) > 35: ground_scroll = 0
+        if abs(ground_scroll) > 35:
+            ground_scroll = 0
+
+        # UPDATE THE PIPE LOCATION
+        pipe_group.update()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:                                                           run = False
