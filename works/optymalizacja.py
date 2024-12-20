@@ -83,6 +83,8 @@ class Pipe(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
 
 # GROUPS
 bird_group      = pygame.sprite.Group()
