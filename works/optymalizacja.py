@@ -9,6 +9,9 @@ height          = 936
 ground_y        = 768
 ground_scroll   = 0
 scroll_speed    = 4
+pipe_gap        = 150                       # px
+pipe_frequency  = 1500                      # ms
+last_pipe       = pygame.time.get_ticks()
 
 flying          = False
 game_over       = False
@@ -63,19 +66,32 @@ class Bird(pygame.sprite.Sprite):
 
 # PIPE CLASS
 class Pipe(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, position):
         pygame.sprite.Sprite.__init__(self)
+
         self.image = pygame.image.load( "assets/pipe.png" )
         self.rect = self.image.get_rect()
-        self.rect.topleft = [x, y]
+
+        # Position:     1 = top | -1 = bottom
+        if position == 1:
+            self.image = pygame.transform.flip( self.image, False, True )
+            self.rect.bottomleft    = [x, y - int(pipe_gap / 2) ]
+
+        if position == -1:
+            self.rect.topleft       = [x, y + int(pipe_gap / 2) ]
+
+    def update(self):
+        self.rect.x -= scroll_speed
 
 # GROUPS
 bird_group      = pygame.sprite.Group()
 pipe_group      = pygame.sprite.Group()
 flappy          = Bird(100, int(height / 2))
-btm_pipe        = Pipe(300, int(height / 2))
+btm_pipe        = Pipe(300, int(height / 2), -1)
+top_pipe        = Pipe(300, int(height / 2), 1)
 bird_group.add(flappy)
 pipe_group.add(btm_pipe)
+pipe_group.add(top_pipe)
 
 # GAME LOOP
 run = True
@@ -95,6 +111,7 @@ while run:
         game_over = True
         flying = False
 
+    # CHECK IF THE GAME IS RUNNING
     if game_over == False:
         ground_scroll -= scroll_speed
         if abs(ground_scroll) > 35: ground_scroll = 0
