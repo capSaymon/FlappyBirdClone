@@ -116,8 +116,9 @@ while run:
         time_now = pygame.time.get_ticks()
         if time_now - last_pipe > pipe_frequency:
             last_pipe   = time_now
-            btm_pipe    = Pipe(width, int(height / 2), -1)
-            top_pipe    = Pipe(width, int(height / 2), 1)
+            pipe_height = random.randint(-100 , 100)
+            btm_pipe    = Pipe(width, int(height / 2) + pipe_height, -1)
+            top_pipe    = Pipe(width, int(height / 2) + pipe_height, 1)
             pipe_group.add(btm_pipe)
             pipe_group.add(top_pipe)
 
