@@ -165,7 +165,8 @@ while run:
             ground_scroll=0
             
         pipe_group.update()
-
+        
+    #check for game over and reset
     if game_over==True:
         if button.draw()==True:
             game_over=False
