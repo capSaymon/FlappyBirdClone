@@ -29,6 +29,7 @@ pass_pipe=False
 background=pygame.image.load('assets/bg.png')
 ground=pygame.image.load('assets/ground.png')
 restart=pygame.image.load('assets/restart.png')
+shop=pygame.image.load('assets/shop.png')
 
 
 bird_group=pygame.sprite.Group()
@@ -44,6 +45,8 @@ def score_text(text, font, color, x, y):
 
 
 button=Button(width//2-50, height//2-100, restart)
+shopButton=Button(width//2-50, height//2, shop)
+
 
 def reset_game():
     pipe_group.empty()
@@ -101,6 +104,7 @@ while run:
         if button.draw(screen)==True:
             game_over=False
             score=reset_game()
+        shopButton.draw(screen)==True
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
