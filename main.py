@@ -32,6 +32,7 @@ pass_pipe = False
 background=pygame.image.load('assets/bg.png')
 ground=pygame.image.load('assets/ground.png')
 restart=pygame.image.load('assets/restart.png')
+menuGameOver=pygame.image.load('assets/menuGameOver.png')
 
 shopButtonImage=pygame.image.load('assets/shop.png')
 shopBackground=pygame.image.load('assets/shopBackground.png')
@@ -97,7 +98,7 @@ while run:
                     score+=1
                     pass_pipe=False
 
-        score_text(str(score), font, text_color, int(width/2),30)
+        score_text(str(score), font, text_color, int(width/2)-10,30)
 
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top<0:
             game_over=True
@@ -132,6 +133,7 @@ while run:
     #check for game over, reset and shop
     if game_over==True:
         if shopAction==False:
+            screen.blit(menuGameOver, (width//2 - menuGameOver.get_width()//2+10, height//2 - menuGameOver.get_height()//2))
             if buttonRestart.draw(screen)==True:
                 game_over=False
                 score=reset_game()
