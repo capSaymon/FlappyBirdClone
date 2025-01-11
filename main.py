@@ -16,17 +16,18 @@ text_color=(255,255,255)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Flappy Bird')
 
-ground_y=768
-ground_scroll=0
-scroll_speed=4
-flying=False
-game_over=False
-shopAction=False
-gap=150
-frequency=1500
-last_pipe=pygame.time.get_ticks()-frequency
-score=0
-pass_pipe=False
+ground_y = 768
+ground_scroll = 0
+scroll_speed = 4
+flying = False
+game_over = False
+shopAction = False
+health = 0
+gap = 150
+frequency = 1500
+last_pipe = pygame.time.get_ticks()-frequency
+score = 50
+pass_pipe = False
 
 background=pygame.image.load('assets/bg.png')
 ground=pygame.image.load('assets/ground.png')
@@ -35,6 +36,7 @@ restart=pygame.image.load('assets/restart.png')
 shopButtonImage=pygame.image.load('assets/shop.png')
 shopBackground=pygame.image.load('assets/shopBackground.png')
 
+heart=pygame.image.load('assets/heart.png')
 
 bird_group=pygame.sprite.Group()
 flappy=Bird(100, int(height/2))
@@ -51,8 +53,7 @@ def score_text(text, font, color, x, y):
 buttonRestart=Button(width//2-50, height//2-100, restart)
 shopButtonRestart=Button(width//2-50, height//2-395, restart)
 shopButton=Button(width//2-50, height//2, shopButtonImage)
-shop=Shop(0, 0, shopBackground)
-
+shop=Shop(0, 0, shopBackground, width, height, health)
 
 def reset_game():
     pipe_group.empty()
@@ -61,19 +62,26 @@ def reset_game():
     score=0
     return score
 
+
+
+
 run=True
 while run:
     clock.tick(fps)
+
     if shopAction:
         shop.draw(screen)
+        health, score = shop.update_health(screen, score)
         score_text(str(score), font, text_color, int(width/2),30)
+
         if game_over==True:
             if shopButtonRestart.draw(screen)==True:
                 game_over=False
                 shopAction=False
                 score=reset_game()
+
     else:
-        screen.blit(background,(0,0))    
+        screen.blit(background,(0,0))
 
         bird_group.draw(screen)
         bird_group.update(ground_y, game_over, flying)
@@ -113,6 +121,13 @@ while run:
                 ground_scroll=0
                 
             pipe_group.update(scroll_speed)
+
+        if health > 0:
+            x  = 20
+            y = 20
+            for i in range(health):
+                screen.blit(heart, (x, y))
+                x += 40
         
     #check for game over, reset and shop
     if game_over==True:
