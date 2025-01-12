@@ -23,6 +23,8 @@ flying = False
 game_over = False
 shopAction = False
 health = 0
+healthAction = False
+healthSave = 0
 gap = 150
 frequency = 1500
 last_pipe = pygame.time.get_ticks()-frequency
@@ -33,10 +35,9 @@ background=pygame.image.load('assets/bg.png')
 ground=pygame.image.load('assets/ground.png')
 restart=pygame.image.load('assets/restart.png')
 menuGameOver=pygame.image.load('assets/menuGameOver.png')
-
 shopButtonImage=pygame.image.load('assets/shop.png')
 shopBackground=pygame.image.load('assets/shopBackground.png')
-
+healthImageButton=pygame.image.load('assets/health.png')
 heart=pygame.image.load('assets/heart.png')
 
 bird_group=pygame.sprite.Group()
@@ -52,7 +53,6 @@ def score_text(text, font, color, x, y):
 
 
 buttonRestart=Button(width//2-50, height//2-100, restart)
-shopButtonRestart=Button(width//2-50, height//2-395, restart)
 shopButton=Button(width//2-50, height//2, shopButtonImage)
 shop=Shop(0, 0, shopBackground, width, height, health)
 
@@ -72,14 +72,10 @@ while run:
 
     if shopAction:
         shop.draw(screen)
-        health, score = shop.update_health(screen, score)
-        score_text(str(score), font, text_color, int(width/2),30)
-
-        if game_over==True:
-            if shopButtonRestart.draw(screen)==True:
-                game_over=False
-                shopAction=False
-                score=reset_game()
+        score_text(str(score), font, text_color, int(width/2)-10,30)
+        health, score = shop.update_health(screen, score, healthSave, healthImageButton)
+        healthSave = health
+        shopAction = shop.back_button(screen, restart)
 
     else:
         screen.blit(background,(0,0))
@@ -90,18 +86,25 @@ while run:
 
         screen.blit(ground,(ground_scroll,ground_y))
 
-        if len(pipe_group)>0:
+        if len(pipe_group) > 0:
             if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right and pass_pipe == False:
-                pass_pipe=True
-            if pass_pipe==True:
+                pass_pipe = True
+            if pass_pipe == True:
                 if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
-                    score+=1
-                    pass_pipe=False
+                    score += 1
+                    healthAction = False
+                    pass_pipe = False
 
         score_text(str(score), font, text_color, int(width/2)-10,30)
 
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top<0:
-            game_over=True
+            if not healthAction:
+                health -= 1
+                healthAction = True
+                if health <= 0:
+                    game_over = True
+        if flappy.rect.top < 0:
+            game_over = True
 
         if flappy.rect.bottom >= ground_y:
             game_over=True
@@ -136,6 +139,7 @@ while run:
             screen.blit(menuGameOver, (width//2 - menuGameOver.get_width()//2+10, height//2 - menuGameOver.get_height()//2))
             if buttonRestart.draw(screen)==True:
                 game_over=False
+                health=healthSave
                 score=reset_game()
             if shopButton.draw(screen)==True:
                 shopAction=True
