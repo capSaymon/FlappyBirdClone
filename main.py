@@ -52,8 +52,8 @@ def score_text(text, font, color, x, y):
     screen.blit(img,(x,y))
 
 
-buttonRestart=Button(width//2-50, height//2-100, restart)
-shopButton=Button(width//2-50, height//2, shopButtonImage)
+buttonRestart=Button(width//2-50, height//2-20, restart)
+shopButton=Button(width//2-50, height//2+40, shopButtonImage)
 shop=Shop(0, 0, shopBackground, width, height, health)
 
 def reset_game():
@@ -94,8 +94,8 @@ while run:
                     score += 1
                     healthAction = False
                     pass_pipe = False
-
-        score_text(str(score), font, text_color, int(width/2)-10,30)
+        if not game_over:
+            score_text(str(score), font, text_color, int(width/2)-10,30)
 
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top<0:
             if not healthAction:
@@ -137,6 +137,7 @@ while run:
     if game_over==True:
         if shopAction==False:
             screen.blit(menuGameOver, (width//2 - menuGameOver.get_width()//2+10, height//2 - menuGameOver.get_height()//2))
+            score_text(str(score), font, text_color, int(width/2)-10,370)
             if buttonRestart.draw(screen)==True:
                 game_over=False
                 health=healthSave
