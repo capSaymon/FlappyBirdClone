@@ -72,7 +72,8 @@ while run:
 
     if shopAction:
         shop.draw(screen)
-        score_text(str(score), font, text_color, int(width/2)-10,30)
+        fontShop=pygame.font.SysFont('Bauhus 93', 50)
+        score_text(f"Score: {score}", fontShop, text_color, int(width/2)-350,100)
         health, score = shop.update_health(screen, score, healthSave, healthImageButton)
         healthSave = health
         shopAction = shop.back_button(screen, restart)

@@ -14,19 +14,19 @@ class Shop():
     def draw(self, screen):
         screen.blit(self.image,(self.rect.x, self.rect.y))
 
-    def price_text(self, screen, text, x, y):
-        font=pygame.font.SysFont('Bauhus 93', 40)
+    def text(self, screen, text, x, y, size):
+        font=pygame.font.SysFont('Bauhus 93', size)
         color=(255,255,255)
         img=font.render(text,True, color)
         screen.blit(img,(x,y))
         
     def update_health(self, screen, score, actualHealth, healthImage):
-        x = self.width//2-200
-        y = self.height//2-300
+        x = 100
+        y = self.height//2-250
         healthPrice=10
 
         buttonBuyHealth=Button(x, y, healthImage)
-        self.price_text(screen, f"Price: {healthPrice}", x, y + 50)
+        self.text(screen, f"Price: {healthPrice}", x, y + 50, 40)
 
         if buttonBuyHealth.draw(screen):
             if not self.button_clicked:
@@ -41,7 +41,17 @@ class Shop():
         return self.health, score
     
     def back_button (self, screen, imageButtonBack):
-        buttonBack=Button(self.width//2-60, self.height//2-380, imageButtonBack)
+        text="BACK"
+        font=pygame.font.SysFont('Bauhus 93', 40)
+        color=(255,255,255)
+        x = int(self.width/2)+250
+        y = 100
+
+        text_img = font.render(text, True, color)
+        text_rect = text_img.get_rect()
+        text_rect.topleft = (x, y)
+        buttonBack = Button(x, y, text_img)
+
         if buttonBack.draw(screen):
             if not self.button_clicked:
                 self.button_clicked = True
