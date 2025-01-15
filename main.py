@@ -4,11 +4,9 @@ from bird import Bird
 from pipe import Pipe
 from button import Button
 from shop import Shop
-
 from main_menu import MainMenu
 
 pygame.init()
-
 
 clock = pygame.time.Clock()
 fps = 60
@@ -17,7 +15,6 @@ font = pygame.font.SysFont('Bauhaus 93', 60)
 text_color = (255, 255, 255)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Flappy Bird')
-
 
 ground_y = 768
 ground_scroll = 0
@@ -35,7 +32,6 @@ last_pipe = pygame.time.get_ticks() - frequency
 score = 50
 pass_pipe = False
 
-
 background = pygame.image.load('assets/bg.png')
 ground = pygame.image.load('assets/ground.png')
 restart_img = pygame.image.load('assets/restart.png')
@@ -47,10 +43,8 @@ heart = pygame.image.load('assets/heart.png')
 pause_button_img = pygame.transform.scale(pygame.image.load('assets/button_pause.png'), (100, 100))
 resume_button_img = pygame.transform.scale(pygame.image.load('assets/button_resume.png'), (100, 100))
 
-
 bird_group = pygame.sprite.Group()
 pipe_group = pygame.sprite.Group()
-
 
 flappy = Bird(100, height // 2)
 bird_group.add(flappy)
@@ -61,18 +55,15 @@ pause_button = Button(width - 120, 10, pause_button_img)
 resume_button = Button(width - 120, 10, resume_button_img)
 shop = Shop(0, 0, shop_background, width, height, health)
 
-
 def score_text(text, font, color, x, y):
     img = font.render(text, True, color)
     screen.blit(img, (x, y))
-
 
 def reset_game():
     pipe_group.empty()
     flappy.rect.x = 100
     flappy.rect.y = height // 2
-    return 0
-
+    return score
 
 run = True
 game_started = False
@@ -158,14 +149,11 @@ while run:
 
                         pipe_height = random.randint(-100, 100)
 
-
                         top_pipe = Pipe(width, height // 2 + pipe_height, 1, gap)
                         bottom_pipe = Pipe(width, height // 2 + pipe_height, -1, gap)
 
-
                         pipe_group.add(top_pipe)
                         pipe_group.add(bottom_pipe)
-
 
                         last_pipe = time_now
 
