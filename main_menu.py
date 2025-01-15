@@ -23,13 +23,13 @@ class MainMenu:
         self.background_image = pygame.transform.scale(self.background_image, (self.width, self.height - 100))
         self.ground_image = pygame.transform.scale(self.ground_image, (self.width, 100))
         self.title_image = pygame.transform.scale(self.title_image, (500, 150))
-        self.get_ready_image = pygame.transform.scale(self.get_ready_image, (400, 120))  # Збільшено
-        self.instructions_image = pygame.transform.scale(self.instructions_image, (300, 300))  # Збільшено
+        self.get_ready_image = pygame.transform.scale(self.get_ready_image, (400, 120))
+        self.instructions_image = pygame.transform.scale(self.instructions_image, (300, 300))
     def draw(self):
-        # Відображення фону
+
         self.screen.blit(self.background_image, (0, 0))
 
-        # Відображення тексту та зображень
+
         self.screen.blit(self.title_image, (self.width // 2 - self.title_image.get_width() // 2, 50))
         self.screen.blit(self.get_ready_image,
                          (self.width // 2 - self.get_ready_image.get_width() // 2, 250))  # Опущено
