@@ -5,11 +5,11 @@ from pipe import Pipe
 from button import Button
 from shop import Shop
 
-from main_menu import MainMenu  # Головне меню
+from main_menu import MainMenu
 
 pygame.init()
 
-# Основні параметри гри
+
 clock = pygame.time.Clock()
 fps = 60
 width = 864
@@ -19,7 +19,7 @@ text_color = (255, 255, 255)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Flappy Bird')
 
-# Змінні
+
 ground_y = 768
 ground_scroll = 0
 scroll_speed = 4
@@ -35,7 +35,7 @@ last_pipe = pygame.time.get_ticks() - frequency
 score = 50
 pass_pipe = False
 
-# Завантаження зображень
+
 background = pygame.image.load('assets/bg.png')
 ground = pygame.image.load('assets/ground.png')
 restart = pygame.image.load('assets/restart.png')
@@ -45,24 +45,24 @@ shopBackground = pygame.image.load('assets/shopBackground.png')
 healthImageButton = pygame.image.load('assets/health.png')
 heart = pygame.image.load('assets/heart.png')
 
-# Групи спрайтів
+
 bird_group = pygame.sprite.Group()
 flappy = Bird(100, int(height / 2))
 bird_group.add(flappy)
 
 pipe_group = pygame.sprite.Group()
 
-# Кнопки
+
 buttonRestart = Button(width // 2 - 50, height // 2 - 20, restart)
 shopButton = Button(width // 2 - 50, height // 2 + 40, shopButtonImage)
 shop = Shop(0, 0, shopBackground, width, height, health)
 
-# Функція відображення тексту
+
 def score_text(text, font, color, x, y):
     img = font.render(text, True, color)
     screen.blit(img, (x, y))
 
-# Скидання гри
+
 def reset_game():
     pipe_group.empty()
     flappy.rect.x = 100
@@ -70,24 +70,24 @@ def reset_game():
     score = 0
     return score
 
-# Основний цикл гри
+
 run = True
-game_started = False  # Для відображення меню
-menu = MainMenu(screen)  # Ініціалізація головного меню
+game_started = False
+menu = MainMenu(screen)
 
 while run:
     clock.tick(fps)
 
-    # Головне меню
+
     if not game_started:
-        menu.draw()  # Відображення меню
+        menu.draw()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                game_started = True  # Початок гри
-                flying = True  # Пташка одразу починає літати
-                flappy.velocity = -10  # Додати початкову швидкість для стрибка пташки
+                game_started = True
+                flying = True
+                flappy.velocity = -10
     else:
         # Ігровий процес
         if shopAction:
