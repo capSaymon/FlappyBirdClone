@@ -181,7 +181,7 @@ while run:
                         score = reset_game()
                     if shop_button.draw(screen):
                         shopAction = True
-
+#
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
