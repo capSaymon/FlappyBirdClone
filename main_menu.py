@@ -19,10 +19,10 @@ class MainMenu:
             print(f"Помилка завантаження зображення: {e}")
             sys.exit()
 
-        # Масштабування для відповідності екрану
+
         self.background_image = pygame.transform.scale(self.background_image, (self.width, self.height - 100))
         self.ground_image = pygame.transform.scale(self.ground_image, (self.width, 100))
-        self.title_image = pygame.transform.scale(self.title_image, (500, 150))  # Збільшено
+        self.title_image = pygame.transform.scale(self.title_image, (500, 150))
         self.get_ready_image = pygame.transform.scale(self.get_ready_image, (400, 120))  # Збільшено
         self.instructions_image = pygame.transform.scale(self.instructions_image, (300, 300))  # Збільшено
     def draw(self):
