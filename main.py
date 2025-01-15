@@ -103,7 +103,6 @@ while run:
                 flappy.velocity = -10
     else:
         if paused:
-            # Відображення паузи, але без оновлення об'єктів
             screen.blit(background, (0, 0))
             bird_group.draw(screen)
             pipe_group.draw(screen)
