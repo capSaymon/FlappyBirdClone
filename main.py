@@ -9,7 +9,7 @@ from main_menu import MainMenu
 
 pygame.init()
 
-# Налаштування екрану
+
 clock = pygame.time.Clock()
 fps = 60
 width, height = 864, 936
@@ -18,7 +18,7 @@ text_color = (255, 255, 255)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Flappy Bird')
 
-# Змінні стану гри
+
 ground_y = 768
 ground_scroll = 0
 scroll_speed = 4
@@ -35,7 +35,7 @@ last_pipe = pygame.time.get_ticks() - frequency
 score = 50
 pass_pipe = False
 
-# Завантаження зображень
+
 background = pygame.image.load('assets/bg.png')
 ground = pygame.image.load('assets/ground.png')
 restart_img = pygame.image.load('assets/restart.png')
@@ -47,11 +47,11 @@ heart = pygame.image.load('assets/heart.png')
 pause_button_img = pygame.transform.scale(pygame.image.load('assets/button_pause.png'), (100, 100))
 resume_button_img = pygame.transform.scale(pygame.image.load('assets/button_resume.png'), (100, 100))
 
-# Групи спрайтів
+
 bird_group = pygame.sprite.Group()
 pipe_group = pygame.sprite.Group()
 
-# Ігрові об'єкти
+
 flappy = Bird(100, height // 2)
 bird_group.add(flappy)
 
@@ -61,19 +61,19 @@ pause_button = Button(width - 120, 10, pause_button_img)
 resume_button = Button(width - 120, 10, resume_button_img)
 shop = Shop(0, 0, shop_background, width, height, health)
 
-# Текст для відображення очок
+
 def score_text(text, font, color, x, y):
     img = font.render(text, True, color)
     screen.blit(img, (x, y))
 
-# Скидання гри
+
 def reset_game():
     pipe_group.empty()
     flappy.rect.x = 100
     flappy.rect.y = height // 2
     return 0
 
-# Основний цикл гри
+
 run = True
 game_started = False
 menu = MainMenu(screen)
@@ -156,18 +156,18 @@ while run:
                 if not game_over and flying:
                     time_now = pygame.time.get_ticks()
                     if time_now - last_pipe > frequency:
-                        # Визначення висоти колони
+
                         pipe_height = random.randint(-100, 100)
 
-                        # Створення верхньої та нижньої колони
+
                         top_pipe = Pipe(width, height // 2 + pipe_height, 1, gap)
                         bottom_pipe = Pipe(width, height // 2 + pipe_height, -1, gap)
 
-                        # Додавання пари колон до групи
+
                         pipe_group.add(top_pipe)
                         pipe_group.add(bottom_pipe)
 
-                        # Оновлення часу останньої колони
+
                         last_pipe = time_now
 
                     ground_scroll -= scroll_speed
