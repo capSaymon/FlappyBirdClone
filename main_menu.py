@@ -8,7 +8,7 @@ class MainMenu:
         self.screen = screen
         self.width, self.height = screen.get_size()
 
-        # Завантаження асетів
+
         try:
             self.background_image = pygame.image.load('assets/bg.png')
             self.ground_image = pygame.image.load('assets/ground.png')
