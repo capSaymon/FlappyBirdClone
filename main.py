@@ -89,7 +89,7 @@ while run:
                 flying = True
                 flappy.velocity = -10
     else:
-        # Ігровий процес
+
         if shopAction:
             shop.draw(screen)
             fontShop = pygame.font.SysFont('Bauhus 93', 50)
@@ -154,7 +154,6 @@ while run:
                     screen.blit(heart, (x, y))
                     x += 40
 
-        # Перевірка стану гри
         if game_over == True:
             if shopAction == False:
                 screen.blit(menuGameOver, (width // 2 - menuGameOver.get_width() // 2 + 10, height // 2 - menuGameOver.get_height() // 2))
