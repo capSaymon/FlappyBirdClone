@@ -172,8 +172,7 @@ while run:
 
             if game_over:
                 if not shopAction:
-                    screen.blit(menuGameOver, (width // 2 - menuGameOver.get_width() // 2 + 10,
-                                               height // 2 - menuGameOver.get_height() // 2))
+                    screen.blit(menuGameOver, (width // 2 - menuGameOver.get_width() // 2 + 10, height // 2 - menuGameOver.get_height() // 2))
                     score_text(str(score), font, text_color, width // 2 - 10, 370)
                     if button_restart.draw(screen):
                         game_over = False
@@ -181,7 +180,7 @@ while run:
                         score = reset_game()
                     if shop_button.draw(screen):
                         shopAction = True
-#
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -189,10 +188,9 @@ while run:
                     flying = True
 
         if paused:
-            if not game_over:
-                resume_button.draw(screen)
+            resume_button.draw(screen)
         else:
-            if not game_over:
+            if not game_over and flying:
                 pause_button.draw(screen)
 
     pygame.display.update()
