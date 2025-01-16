@@ -189,9 +189,11 @@ while run:
                     flying = True
 
         if paused:
-            resume_button.draw(screen)
+            if not game_over:
+                resume_button.draw(screen)
         else:
-            pause_button.draw(screen)
+            if not game_over:
+                pause_button.draw(screen)
 
     pygame.display.update()
 
