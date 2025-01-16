@@ -1,6 +1,11 @@
+# ========================== Copyright © 2024-2025, Flappy Bird Clone, All rights reserved. ========================== #
+#                                                                                                                      #
+#                                   Purpose: Pipe class, describes the pipe object.                                    #
+#                                                                                                                      #
+# ==================================================================================================================== #
+
 import pygame
 
-# PIPE CLASS
 class Pipe(pygame.sprite.Sprite):
     def __init__(self, x, y, position, pipe_gap):
         pygame.sprite.Sprite.__init__(self)
@@ -9,7 +14,7 @@ class Pipe(pygame.sprite.Sprite):
         self.image = pygame.image.load( "assets/pipe.png" )
         self.rect = self.image.get_rect()
 
-        # IF POSITION VAR == 1 THEN IT'S THE TOP PIPE, ELSE IT'S THE BOTTOM ONE
+        # WARTOŚĆ ZMIENNEJ POSITION DEFINIUJE POZYCJE RURY NA OSI Y (GÓRNA / DOLNA)
         if position == 1:
             self.image = pygame.transform.flip( self.image, False, True )
             self.rect.bottomleft    = [x, y - int(pipe_gap / 2) ]
@@ -17,9 +22,8 @@ class Pipe(pygame.sprite.Sprite):
         if position == -1:
             self.rect.topleft       = [x, y + int(pipe_gap / 2) ]
 
-    # UPDATE THE PIPE X COORD LOCATION
+    # AKTUALIZACJA POZYCJI OBIEKTU NA OSI X
     def update(self, scroll_speed):
         self.rect.x -= scroll_speed
-        # MEMORY OVERFLOW FIX - KILL THE PIPE IF IT REACHES END OF THE SCREEN
-        if self.rect.right < 0:
-            self.kill()
+        # MEMORY OVERFLOW FIX - ZABIJ OBIEKT KIEDY DOTRZE DO KOŃCA EKRANU
+        if self.rect.right < 0: self.kill()
