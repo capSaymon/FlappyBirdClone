@@ -10,6 +10,7 @@ pygame.init()
 
 clock = pygame.time.Clock()
 fps = 60
+
 width, height = 864, 936
 font = pygame.font.SysFont('Bauhaus 93', 60)
 text_color = (255, 255, 255)
@@ -102,11 +103,18 @@ while run:
             score_text(f"Paused", font, text_color, width // 2 - 100, height // 2 - 50)
         else:
             if shopAction:
+                #stworzenie GUI sklepu
                 shop.draw(screen)
-                fontShop = pygame.font.SysFont('Bauhaus 93', 50)
-                score_text(f"Score: {score}", fontShop, text_color, width // 2 - 350, 100)
+
+                #stworzenie w GUI sklepu tekstu wyświetlania score
+                shop.score_shop(screen, score)
+
+                #stworzenie przycisku boosta "serc"
                 health, score = shop.update_health(screen, score, healthSave, health_img)
+                #zapisanie na stałe ilości serc
                 healthSave = health
+
+                #stworzenie przycisku BACK
                 shopAction = shop.back_button(screen, restart_img)
             else:
                 screen.blit(background, (0, 0))
@@ -172,8 +180,7 @@ while run:
 
             if game_over:
                 if not shopAction:
-                    screen.blit(menuGameOver, (width // 2 - menuGameOver.get_width() // 2 + 10,
-                                               height // 2 - menuGameOver.get_height() // 2))
+                    screen.blit(menuGameOver, (width // 2 - menuGameOver.get_width() // 2 + 10, height // 2 - menuGameOver.get_height() // 2))
                     score_text(str(score), font, text_color, width // 2 - 10, 370)
                     if button_restart.draw(screen):
                         game_over = False
@@ -181,7 +188,7 @@ while run:
                         score = reset_game()
                     if shop_button.draw(screen):
                         shopAction = True
-#
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -191,7 +198,8 @@ while run:
         if paused:
             resume_button.draw(screen)
         else:
-            pause_button.draw(screen)
+            if not game_over and flying:
+                pause_button.draw(screen)
 
     pygame.display.update()
 
