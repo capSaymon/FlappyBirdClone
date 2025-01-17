@@ -46,16 +46,17 @@ health = 0
 healthSave = 0
 gap = 150
 frequency = 1500
-score = 0
+score = 50  # Поточний рахунок
 pass_pipe = False
 flying = False
 game_over = False
 shopAction = False
 paused = False
 in_skins_menu = False
-selected_skin = 0  # Индекс текущего выбранного скина
+selected_skin = 0  # Current selected skin index
 current_skin_frames = None
 last_pipe = pygame.time.get_ticks() - frequency
+invincibility_timer = 0  # Таймер невразливості
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                   Assets                                                             #
@@ -122,9 +123,9 @@ skin3_frames = [
 ]
 
 skins = [default_frames, skin1_frames, skin2_frames, skin3_frames]
-skin_costs = [0, 1, 50, 100]  # Стоимость скинов
+skin_costs = [0, 1, 50, 100]  # Skin costs
 
-current_skin_frames = skins[selected_skin]  # Устанавливаем текущий скин
+current_skin_frames = skins[selected_skin]  # Set the current skin
 
 flappy = Bird(100, GAME_HEIGHT // 2, current_skin_frames)
 bird_group.add(flappy)
@@ -143,9 +144,9 @@ def score_text(text, font, color, x, y):
 
 def reset_game():
     """
-    Сброс игры, включая позицию птицы, и возвращение текущего выбранного скина.
+    Reset the game, including bird position, and restore saved health and score.
     """
-    global flying, game_over, pass_pipe, healthAction, flappy, bird_group
+    global flying, game_over, pass_pipe, flappy, bird_group, health, score, invincibility_timer
     pipe_group.empty()
     bird_group.empty()
     flappy = Bird(100, GAME_HEIGHT // 2, current_skin_frames)
@@ -153,8 +154,8 @@ def reset_game():
     flying = True
     game_over = False
     pass_pipe = False
-    healthAction = False
-    return score
+    health = healthSave  # Restore saved health
+    invincibility_timer = 0
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                   Game loop                                                          #
@@ -203,6 +204,7 @@ while run:
                 if result == "buy_health":
                     if score >= 10:
                         health += 1
+                        healthSave = health  # Save health persistently
                         score -= 10
                 elif result == "back_to_gameover":
                     shopAction = False
@@ -239,14 +241,29 @@ while run:
                 if not game_over:
                     score_text(f"{score}", GAME_FONT, GAME_FONT_COLOR, GAME_WIDTH // 2, 30)
 
-                if pygame.sprite.spritecollide(flappy, pipe_group, False) or flappy.rect.top < 0:
-                    game_over = True
-                    pygame.mixer.Sound.play(gameover_sound)
+                if invincibility_timer > 0:
+                    invincibility_timer -= 1
 
-                if flappy.rect.bottom >= ground_y:
-                    game_over = True
-                    flying = False
-                    pygame.mixer.Sound.play(gameover_sound)
+                if (pygame.sprite.spritecollide(flappy, pipe_group, False) or flappy.rect.top < 0) and invincibility_timer == 0:
+                    if health > 0:
+                        health -= 1
+                        flappy.rect.y = GAME_HEIGHT // 2
+                        flappy.velocity = 0
+                        invincibility_timer = GAME_FPS * 2  # Невразливість на 2 секунди
+                    else:
+                        game_over = True
+                        pygame.mixer.Sound.play(gameover_sound)
+
+                if flappy.rect.bottom >= ground_y and invincibility_timer == 0:
+                    if health > 0:
+                        health -= 1
+                        flappy.rect.y = GAME_HEIGHT // 2
+                        flappy.velocity = 0
+                        invincibility_timer = GAME_FPS * 2
+                    else:
+                        game_over = True
+                        flying = False
+                        pygame.mixer.Sound.play(gameover_sound)
 
                 if not game_over and flying:
                     time_now = pygame.time.get_ticks()
@@ -292,8 +309,7 @@ while run:
                     score_text(f"{score}", GAME_FONT, GAME_FONT_COLOR, GAME_WIDTH // 2, 370)
                     if button_restart.draw(GAME_SCREEN):
                         game_over = False
-                        health = healthSave
-                        score = reset_game()
+                        reset_game()
                     if shop_button.draw(GAME_SCREEN):
                         shopAction = True
                     if skins_button.draw(GAME_SCREEN):
