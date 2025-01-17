@@ -46,7 +46,7 @@ health = 0
 healthSave = 0
 gap = 150
 frequency = 1500
-score = 50  # Поточний рахунок
+score = 50 # Поточний рахунок
 pass_pipe = False
 flying = False
 game_over = False
@@ -247,9 +247,8 @@ while run:
                 if (pygame.sprite.spritecollide(flappy, pipe_group, False) or flappy.rect.top < 0) and invincibility_timer == 0:
                     if health > 0:
                         health -= 1
-                        flappy.rect.y = GAME_HEIGHT // 2
-                        flappy.velocity = 0
                         invincibility_timer = GAME_FPS * 2  # Невразливість на 2 секунди
+                        flying = True  # Птах продовжує летіти
                     else:
                         game_over = True
                         pygame.mixer.Sound.play(gameover_sound)
@@ -257,7 +256,6 @@ while run:
                 if flappy.rect.bottom >= ground_y and invincibility_timer == 0:
                     if health > 0:
                         health -= 1
-                        flappy.rect.y = GAME_HEIGHT // 2
                         flappy.velocity = 0
                         invincibility_timer = GAME_FPS * 2
                     else:
