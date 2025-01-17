@@ -15,6 +15,7 @@ from coin import Coin
 from shop import Shop
 from button import Button
 from main_menu import MainMenu
+from skin_menu import SkinMenu
 
 pygame.init()
 pygame.mixer.init()
@@ -51,7 +52,9 @@ flying = False
 game_over = False
 shopAction = False
 paused = False
-healthAction = False
+in_skins_menu = False
+selected_skin = 0  # Индекс текущего выбранного скина
+current_skin_frames = None
 last_pipe = pygame.time.get_ticks() - frequency
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -63,6 +66,7 @@ ground = pygame.image.load('assets/ground.png')
 restart_img = pygame.image.load('assets/restart.png')
 menuGameOver = pygame.image.load('assets/menuGameOver.png')
 shop_button_img = pygame.image.load('assets/shop.png')
+skins_button_img = pygame.image.load('assets/skins_button.png')
 shop_background = pygame.image.load('assets/shopBackground.png')
 health_img = pygame.image.load('assets/health.png')
 heart = pygame.image.load('assets/heart.png')
@@ -95,26 +99,58 @@ bird_group = pygame.sprite.Group()
 pipe_group = pygame.sprite.Group()
 coin_group = pygame.sprite.Group()
 
-flappy = Bird(100, GAME_HEIGHT // 2)
+# Skins setup
+default_frames = [
+    pygame.image.load('assets/bird1.png'),
+    pygame.image.load('assets/bird2.png'),
+    pygame.image.load('assets/bird3.png')
+]
+skin1_frames = [
+    pygame.image.load('assets/skins/skin1_frame1.png'),
+    pygame.image.load('assets/skins/skin1_frame2.png'),
+    pygame.image.load('assets/skins/skin1_frame3.png')
+]
+skin2_frames = [
+    pygame.image.load('assets/skins/skin2_frame1.png'),
+    pygame.image.load('assets/skins/skin2_frame2.png'),
+    pygame.image.load('assets/skins/skin2_frame3.png')
+]
+skin3_frames = [
+    pygame.image.load('assets/skins/skin3_frame1.png'),
+    pygame.image.load('assets/skins/skin3_frame2.png'),
+    pygame.image.load('assets/skins/skin3_frame3.png')
+]
+
+skins = [default_frames, skin1_frames, skin2_frames, skin3_frames]
+skin_costs = [0, 1, 50, 100]  # Стоимость скинов
+
+current_skin_frames = skins[selected_skin]  # Устанавливаем текущий скин
+
+flappy = Bird(100, GAME_HEIGHT // 2, current_skin_frames)
 bird_group.add(flappy)
 
 button_restart = Button(GAME_WIDTH // 2 - 50, GAME_HEIGHT // 2 - 20, restart_img)
 shop_button = Button(GAME_WIDTH // 2 - 50, GAME_HEIGHT // 2 + 40, shop_button_img)
+skins_button = Button(GAME_WIDTH // 2 - 50, GAME_HEIGHT // 2 + 100, skins_button_img)
 pause_button = Button(GAME_WIDTH - 120, 10, pause_button_img)
 resume_button = Button(GAME_WIDTH - 120, 10, resume_button_img)
 shop = Shop(0, 0, shop_background, GAME_WIDTH, GAME_HEIGHT, health)
+skin_menu = SkinMenu(GAME_SCREEN, skins, skin_costs)
 
 def score_text(text, font, color, x, y):
     img = font.render(text, True, color)
     GAME_SCREEN.blit(img, (x, y))
 
 def reset_game():
-    global flying, game_over, pass_pipe, healthAction
+    """
+    Сброс игры, включая позицию птицы, и возвращение текущего выбранного скина.
+    """
+    global flying, game_over, pass_pipe, healthAction, flappy, bird_group
     pipe_group.empty()
-    flappy.rect.x = 100
-    flappy.rect.y = GAME_HEIGHT // 2
-    flappy.velocity = 0
-    flying = True  # Ensure bird can fly again
+    bird_group.empty()
+    flappy = Bird(100, GAME_HEIGHT // 2, current_skin_frames)
+    bird_group.add(flappy)
+    flying = True
     game_over = False
     pass_pipe = False
     healthAction = False
@@ -163,11 +199,26 @@ while run:
             score_text(f"Paused", GAME_FONT, GAME_FONT_COLOR, GAME_WIDTH // 2 - 100, GAME_HEIGHT // 2 - 50)
         else:
             if shopAction:
-                shop.draw(GAME_SCREEN)
-                shop.score_shop(GAME_SCREEN, score)
-                health, score = shop.update_health(GAME_SCREEN, score, healthSave, health_img)
-                healthSave = health
-                shopAction = shop.back_button(GAME_SCREEN, restart_img)
+                result = shop.draw(GAME_SCREEN)
+                if result == "buy_health":
+                    if score >= 10:
+                        health += 1
+                        score -= 10
+                elif result == "back_to_gameover":
+                    shopAction = False
+            elif in_skins_menu:
+                result, score = skin_menu.draw(score)
+                if result == "back_to_gameover":
+                    in_skins_menu = False
+                else:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            run = False
+                            in_skins_menu = False
+                        else:
+                            in_skins_menu = skin_menu.handle_event(event)
+                    selected_skin = skin_menu.get_selected_skin()
+                    current_skin_frames = skins[selected_skin]
             else:
                 GAME_SCREEN.blit(background, (0, 0))
                 bird_group.draw(GAME_SCREEN)
@@ -188,11 +239,7 @@ while run:
                 if not game_over:
                     score_text(f"{score}", GAME_FONT, GAME_FONT_COLOR, GAME_WIDTH // 2, 30)
 
-                # Updated collision logic for bird and pipes
-                if pygame.sprite.spritecollide(flappy, pipe_group, False):
-                    game_over = True
-                    pygame.mixer.Sound.play(gameover_sound)
-                if flappy.rect.top < 0:
+                if pygame.sprite.spritecollide(flappy, pipe_group, False) or flappy.rect.top < 0:
                     game_over = True
                     pygame.mixer.Sound.play(gameover_sound)
 
@@ -240,7 +287,7 @@ while run:
                         x += 40
 
             if game_over:
-                if not shopAction:
+                if not shopAction and not in_skins_menu:
                     GAME_SCREEN.blit(menuGameOver, (GAME_WIDTH // 2 - menuGameOver.get_width() // 2 + 10, GAME_HEIGHT // 2 - menuGameOver.get_height() // 2))
                     score_text(f"{score}", GAME_FONT, GAME_FONT_COLOR, GAME_WIDTH // 2, 370)
                     if button_restart.draw(GAME_SCREEN):
@@ -249,6 +296,8 @@ while run:
                         score = reset_game()
                     if shop_button.draw(GAME_SCREEN):
                         shopAction = True
+                    if skins_button.draw(GAME_SCREEN):
+                        in_skins_menu = True
 
             if not game_over and flying:
                 pause_button.draw(GAME_SCREEN)
